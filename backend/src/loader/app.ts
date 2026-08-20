@@ -4,7 +4,6 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import router from "../routes/index.route.js";
-import ExpressMongoSanitize from "express-mongo-sanitize";
 import { corsOptions } from "../config/corsOptions.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -12,13 +11,13 @@ import errorHandlerMiddleware, {
   notFoundMiddleware,
 } from "../middlewares/index.middleware.js";
 import { errorHandler, successHandler } from "../config/morgan.js";
+import WeatherRoutes from "../routes/weather.route.js";
 
 dotenv.config();
 
 export const bootstrapExpress = (app: any) => {
   app.use(successHandler);
   app.use(errorHandler);
-  app.use(ExpressMongoSanitize());
   app.use(morgan("dev"));
   app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -42,6 +41,7 @@ export const bootstrapExpress = (app: any) => {
 
   // Route (API)
   app.use("/api", router);
+  app.use("/api/v1/weather", WeatherRoutes);
 
   app.use(notFoundMiddleware);
   app.use(errorHandlerMiddleware);
