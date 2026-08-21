@@ -28,7 +28,7 @@ export const createWeatherDataService =
 
     let cntParam = "";
     if (days) {
-      cntParam = `&cnt=${days}`;
+      cntParam = `&cnt=${days * 8}`;
     }
 
     const url = `${process.env.API_BASE_URL}?${queryParams}${cntParam}&appid=${process.env.OPENWEATHER_API_KEY}`;
@@ -40,7 +40,11 @@ export const createWeatherDataService =
     const cityName = weatherData.city?.name || weatherData.name;
     if (cityName) {
       const wikiUrl = `${process.env.WIKIPEDIA_BASE_URL}/page/summary/${encodeURIComponent(cityName)}`;
-      const wikiResponse = await apiClient.get(wikiUrl).catch(() => null);
+      const wikiResponse = await apiClient
+        .get(wikiUrl, {
+          headers: { "User-Agent": "WeatherApp/1.0" },
+        })
+        .catch(() => null);
       if (wikiResponse?.data?.extract) {
         locationDescription = wikiResponse.data.extract;
       }
@@ -139,8 +143,19 @@ export const exportWeatherDataService =
           doc.moveDown();
 
           weatherData.forEach((item, index) => {
-            doc.fontSize(14).text(`Record #${index + 1}: ${item.resolvedLocationName}`);
-            doc.fontSize(12).text(`Search: ${item.searchType} (${item.searchQuery})`);
+            const currentTemp = item.weatherData?.list?.[0]?.main?.temp
+              ? Math.round(item.weatherData.list[0].main.temp - 273.15)
+              : "N/A";
+            const currentCondition =
+              item.weatherData?.list?.[0]?.weather?.[0]?.description || "N/A";
+
+            doc
+              .fontSize(14)
+              .text(`Record #${index + 1}: ${item.resolvedLocationName}`);
+            doc
+              .fontSize(12)
+              .text(`Search: ${item.searchType} (${item.searchQuery})`);
+            doc.text(`Current Weather: ${currentTemp}°C, ${currentCondition}`);
             doc.text(`Description: ${item.locationDescription || "N/A"}`);
             doc.text(`Days Forecasted: ${item.days || "N/A"}`);
             doc.moveDown();

@@ -26,7 +26,7 @@ describe("Weather Services", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.API_BASE_URL =
-      "https://api.openweathermap.org/data/2.5/forecast/daily";
+      "https://api.openweathermap.org/data/2.5/forecast";
     process.env.WIKIPEDIA_BASE_URL = "https://en.wikipedia.org/api/rest_v1";
     process.env.OPENWEATHER_API_KEY = "test-key";
   });
@@ -46,11 +46,12 @@ describe("Weather Services", () => {
 
       expect(axios.get).toHaveBeenNthCalledWith(
         1,
-        "https://api.openweathermap.org/data/2.5/forecast/daily?q=London&appid=test-key",
+        "https://api.openweathermap.org/data/2.5/forecast?q=London&appid=test-key",
       );
       expect(axios.get).toHaveBeenNthCalledWith(
         2,
         "https://en.wikipedia.org/api/rest_v1/page/summary/London",
+        { headers: { "User-Agent": "WeatherApp/1.0" } }
       );
       expect(result).toEqual({
         ...mockWeatherResponse.data,
@@ -65,7 +66,7 @@ describe("Weather Services", () => {
       const result = await createWeatherDataService(axios)("city", "London", 5);
 
       expect(axios.get).toHaveBeenCalledWith(
-        "https://api.openweathermap.org/data/2.5/forecast/daily?q=London&cnt=5&appid=test-key",
+        "https://api.openweathermap.org/data/2.5/forecast?q=London&cnt=40&appid=test-key",
       );
       expect(result).toEqual({
         ...mockResponse.data,
@@ -80,7 +81,7 @@ describe("Weather Services", () => {
       const result = await createWeatherDataService(axios)("zipCode", "10001");
 
       expect(axios.get).toHaveBeenCalledWith(
-        "https://api.openweathermap.org/data/2.5/forecast/daily?zip=10001&appid=test-key",
+        "https://api.openweathermap.org/data/2.5/forecast?zip=10001&appid=test-key",
       );
       expect(result).toEqual({
         ...mockResponse.data,
@@ -98,7 +99,7 @@ describe("Weather Services", () => {
       );
 
       expect(axios.get).toHaveBeenCalledWith(
-        "https://api.openweathermap.org/data/2.5/forecast/daily?lat=40.71&lon=-74.00&appid=test-key",
+        "https://api.openweathermap.org/data/2.5/forecast?lat=40.71&lon=-74.00&appid=test-key",
       );
       expect(result).toEqual({
         ...mockResponse.data,
@@ -117,7 +118,7 @@ describe("Weather Services", () => {
       );
 
       expect(axios.get).toHaveBeenCalledWith(
-        "https://api.openweathermap.org/data/2.5/forecast/daily?q=Mars&appid=test-key",
+        "https://api.openweathermap.org/data/2.5/forecast?q=Mars&appid=test-key",
       );
       expect(result).toEqual({
         ...mockResponse.data,
@@ -178,7 +179,7 @@ describe("Weather Services", () => {
     it("should update weather data using city name from API response", async () => {
       const mockApiData = { city: { name: "London" }, list: [] };
       vi.mocked(axios.get).mockResolvedValue({ data: mockApiData });
-      
+
       const mockUpdatedData = { _id: "123", resolvedLocationName: "London" };
       vi.mocked(weatherModel.findByIdAndUpdate).mockResolvedValue(
         mockUpdatedData as any,
@@ -200,7 +201,7 @@ describe("Weather Services", () => {
     it("should update weather data with Unknown if name is missing", async () => {
       const mockApiData = { list: [] };
       vi.mocked(axios.get).mockResolvedValue({ data: mockApiData });
-      
+
       const mockUpdatedData = { _id: "123", resolvedLocationName: "Unknown" };
       vi.mocked(weatherModel.findByIdAndUpdate).mockResolvedValue(
         mockUpdatedData as any,

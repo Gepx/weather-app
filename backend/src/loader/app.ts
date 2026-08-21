@@ -41,7 +41,7 @@ export const bootstrapExpress = (app: any) => {
 
   // Route (API)
   app.use("/api", router);
-  app.use("/api/v1/weather", WeatherRoutes);
+  app.use("/api/weather", WeatherRoutes);
 
   app.use(notFoundMiddleware);
   app.use(errorHandlerMiddleware);
