@@ -1,2 +1,2 @@
 npm --prefix backend run test
-# npm --prefix frontend run test
+npm --prefix frontend run test
