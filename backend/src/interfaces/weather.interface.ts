@@ -5,4 +5,5 @@ export interface IWeather {
   locationDescription?: string;
   days?: number;
   weatherData: Record<string, any>;
+  isCurrentLocation?: boolean;
 }

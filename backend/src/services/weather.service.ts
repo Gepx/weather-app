@@ -33,7 +33,18 @@ export const createWeatherDataService =
 
     const url = `${process.env.API_BASE_URL}?${queryParams}${cntParam}&appid=${process.env.OPENWEATHER_API_KEY}`;
 
-    const response = await apiClient.get(url);
+    let response;
+    try {
+      response = await apiClient.get(url);
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        throw new NotFoundError(
+          "No location found under that name.",
+          ErrorCode.NOT_FOUND,
+        );
+      }
+      throw error;
+    }
     const weatherData = response.data;
 
     let locationDescription = "Description not available.";

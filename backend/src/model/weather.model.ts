@@ -29,6 +29,10 @@ const weatherSchema = new Schema<IWeather>({
     type: Object,
     required: true,
   },
+  isCurrentLocation: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export default model<IWeather>("Weather", weatherSchema);
