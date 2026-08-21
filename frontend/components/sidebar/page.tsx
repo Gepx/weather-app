@@ -68,22 +68,22 @@ const Sidebar = ({
   };
 
   return (
-    <aside className="w-80 flex-shrink-0 border-r border-slate-700/50 bg-slate-800/40 p-5 flex flex-col gap-6 overflow-y-auto">
+    <aside className="w-full md:w-80 h-full flex-shrink-0 border-r border-slate-700/50 bg-slate-800/40 p-5 flex flex-col gap-6">
       <SearchBar
         onSearchSuccess={handleSearchSuccessWrapper}
         editingRecord={editingRecord}
         onCancelEdit={() => setEditingRecord(null)}
       />
 
-      <div className="flex-1 mt-2">
-        <div className="flex items-center justify-between mb-4">
+      <div className="flex-1 mt-2 flex flex-col min-h-0">
+        <div className="flex items-center justify-between mb-4 shrink-0">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
             Recent Searches
           </h3>
           <ExportButton variant="icon" />
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1 pb-4">
           {isLoading ? (
             <div className="text-sm text-slate-500 italic px-2">
               Loading history...
@@ -123,7 +123,15 @@ const Sidebar = ({
                   className={`p-4 rounded-2xl border transition-all active:scale-[0.98] group relative ${selectedHistoryId === record._id ? "border-blue-500 bg-slate-700/50" : "bg-slate-700/30 border-slate-600/30 hover:bg-slate-700/50 cursor-pointer"}`}
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <span className="font-semibold text-slate-200 group-hover:text-white transition-colors truncate pr-2">
+                    <span className="font-semibold text-slate-200 group-hover:text-white transition-colors truncate pr-2 flex items-center gap-1">
+                      {record.isCurrentLocation && (
+                        <span
+                          title="Current Location"
+                          className="text-blue-400"
+                        >
+                          📍
+                        </span>
+                      )}
                       {record.resolvedLocationName}
                     </span>
 
@@ -153,17 +161,19 @@ const Sidebar = ({
                               Edit
                             </span>
                           </button>
-                          <button
-                            onMouseDown={(e) => handleDelete(record._id, e)}
-                            className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2"
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-6 h-6">
-                                <DashboardIcon iconCode="delete" />
-                              </div>
-                              Delete
-                            </span>
-                          </button>
+                          {!record.isCurrentLocation && (
+                            <button
+                              onMouseDown={(e) => handleDelete(record._id, e)}
+                              className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2"
+                            >
+                              <span className="flex items-center gap-2">
+                                <div className="w-6 h-6">
+                                  <DashboardIcon iconCode="delete" />
+                                </div>
+                                Delete
+                              </span>
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -185,6 +195,23 @@ const Sidebar = ({
             })
           )}
         </div>
+      </div>
+
+      <div className="mt-auto shrink-0 pt-6 border-t border-slate-700/50 flex flex-col gap-2 text-xs text-slate-400">
+        <p className="font-semibold text-slate-300">
+          Built by <span className="text-blue-400">Egip Sinargo</span>
+        </p>
+        <p className="leading-relaxed">
+          PM Accelerator is a US based company with a global reach premiering in
+          AI learning and as a development hub, featuring award-winning AI
+          products and mentors from top-tier companies such as Google, Meta,
+          Apple, and Nvidia.
+        </p>
+        <p className="leading-relaxed">
+          They offer a dynamic AI PM Bootcamp, designed to empower the next
+          generation of AI professionals through hands-on experience,
+          mentorship, and real-world projects.
+        </p>
       </div>
     </aside>
   );

@@ -20,7 +20,40 @@ export default function Home() {
       }
       try {
         const response = await weatherApi.getWeatherHistory();
-        setHistory(response.data || []);
+        const historyData = response.data || [];
+        const sortHistory = (data: any[]) => {
+          return [...data].sort((a, b) => {
+            if (a.isCurrentLocation) return -1;
+            if (b.isCurrentLocation) return 1;
+            return 0;
+          });
+        };
+
+        const hasCurrentLocation = historyData.some(
+          (r: any) => r.isCurrentLocation,
+        );
+        if (!hasCurrentLocation && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              try {
+                const { latitude, longitude } = position.coords;
+                await weatherApi.searchWeather(
+                  "coordinates",
+                  `${latitude},${longitude}`,
+                  5,
+                  true,
+                );
+                const newDataResponse = await weatherApi.getWeatherHistory();
+                setHistory(sortHistory(newDataResponse.data || []));
+              } catch (err) {
+                console.error("Failed to fetch current location", err);
+              }
+            },
+            (err) => console.error("Geolocation error:", err),
+          );
+        }
+
+        setHistory(sortHistory(historyData));
       } catch (error) {
         console.error("Failed to fetch history:", error);
       } finally {
@@ -40,7 +73,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-slate-900 text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-slate-900 text-slate-100 overflow-hidden font-sans">
       <Sidebar
         onSearchSuccess={handleSearchSuccess}
         history={history}

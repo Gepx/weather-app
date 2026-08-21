@@ -13,12 +13,7 @@ api.interceptors.response.use(
     if (isAxiosError(error)) {
       if (error.response?.status === 429) {
         toast.warning("Too many requests. Please slow down.");
-      } else {
-        const message = getErrorMessage(error);
-        toast.error(message);
       }
-    } else {
-      toast.error("An unexpected error occurred.");
     }
 
     return Promise.reject(error);

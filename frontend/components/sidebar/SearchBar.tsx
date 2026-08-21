@@ -18,6 +18,7 @@ const SearchBar = ({
   const [query, setQuery] = useState("");
   const [days, setDays] = useState("5");
   const [isLoading, setIsLoading] = useState(false);
+  const isSearchingRef = React.useRef(false);
 
   useEffect(() => {
     if (editingRecord) {
@@ -30,15 +31,21 @@ const SearchBar = ({
   }, [editingRecord]);
 
   const handleSearch = async () => {
+    if (isSearchingRef.current) return;
+    isSearchingRef.current = true;
+    toast.dismiss();
+
     if (!query) {
       toast.warning("Please enter a location!");
+      isSearchingRef.current = false;
       return;
     }
 
     const numDays = Number(days);
     if (numDays > 5) {
-      toast.error("Maximum forecast is 5 days on the free tier.");
+      toast.error("Maximum forecast is 5 days only (free tier huhu).");
       setDays("5");
+      isSearchingRef.current = false;
       return;
     }
 
@@ -66,10 +73,15 @@ const SearchBar = ({
         setQuery("");
         onSearchSuccess();
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to search weather data.";
+      toast.error(errorMsg, { id: "search-error" });
     } finally {
       setIsLoading(false);
+      isSearchingRef.current = false;
     }
   };
 
@@ -81,7 +93,12 @@ const SearchBar = ({
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search city, zip, or lat,lon..."
         className="w-full px-4 py-3 rounded-xl bg-slate-700/50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 border border-slate-600/50 transition-all"
-        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSearch();
+          }
+        }}
       />
 
       <div className="flex gap-2">
