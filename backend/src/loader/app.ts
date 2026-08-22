@@ -19,11 +19,11 @@ export const bootstrapExpress = (app: any) => {
   app.use(successHandler);
   app.use(errorHandler);
   app.use(morgan("dev"));
-  app.use(helmet());
-  app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-  app.use(helmet.xssFilter());
+  app.use((helmet as any)());
+  app.use((helmet as any).crossOriginResourcePolicy({ policy: "cross-origin" }));
+  app.use((helmet as any).xssFilter());
   app.use(
-    helmet.contentSecurityPolicy({
+    (helmet as any).contentSecurityPolicy({
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'trusted-cdn.com"],
