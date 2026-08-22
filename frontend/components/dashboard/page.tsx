@@ -132,10 +132,10 @@ const Dashboard = ({
             </>
           ) : (
             <div className="flex flex-col items-center">
-              <h1 className="text-3xl md:text-4xl font-normal tracking-wide text-slate-100">
+              <h1 className="text-3xl md:text-4xl font-normal tracking-wide text-slate-100 text-center px-4">
                 {forecast.resolvedLocationName}
               </h1>
-              <div className="text-[100px] leading-none font-thin tracking-tighter text-slate-50 mt-2 mb-2 ml-6">
+              <div className="text-[70px] md:text-[100px] leading-none font-thin tracking-tighter text-slate-50 mt-2 mb-2 ml-4 md:ml-6">
                 {currentTemp}°
               </div>
               <h2 className="text-xl md:text-2xl font-medium tracking-wide text-slate-200">

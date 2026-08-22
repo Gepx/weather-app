@@ -66,11 +66,6 @@ export const createWeatherDataService =
 
 export const getWeatherDataService = () => async () => {
   const weatherData = await weatherModel.find({});
-
-  if (!weatherData || weatherData.length === 0) {
-    throw new NotFoundError("Weather not found!", ErrorCode.NOT_FOUND);
-  }
-
   return weatherData;
 };
 

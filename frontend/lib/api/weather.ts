@@ -4,14 +4,12 @@ export const weatherApi = {
   searchWeather: async (
     searchType: string,
     searchQuery: string,
-    days?: number,
-    isCurrentLocation?: boolean
+    days?: number
   ) => {
     const response = await api.post("/weather", {
       searchType,
       searchQuery,
       days,
-      isCurrentLocation,
     });
     return response.data;
   },

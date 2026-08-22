@@ -15,7 +15,7 @@ export const createWeatherSearchController = async (
   next: NextFunction,
 ) => {
   try {
-    const { searchType, searchQuery, days, isCurrentLocation } = req.body;
+    const { searchType, searchQuery, days } = req.body;
 
     const weatherData = await createWeatherDataService(axios)(
       searchType,
@@ -23,39 +23,15 @@ export const createWeatherSearchController = async (
       days,
     );
 
-    let savedWeatherSearch;
-
-    if (isCurrentLocation) {
-      savedWeatherSearch = await WeatherModel.findOneAndUpdate(
-        { isCurrentLocation: true },
-        {
-          searchType,
-          searchQuery,
-          resolvedLocationName:
-            weatherData.city?.name || weatherData.name || "Unknown",
-          locationDescription: weatherData.locationDescription,
-          days,
-          weatherData: weatherData,
-        },
-        { new: true, upsert: true },
-      );
-
-      await WeatherModel.deleteMany({
-        isCurrentLocation: true,
-        _id: { $ne: savedWeatherSearch._id },
-      });
-    } else {
-      savedWeatherSearch = await WeatherModel.create({
-        searchType,
-        searchQuery,
-        resolvedLocationName:
-          weatherData.city?.name || weatherData.name || "Unknown",
-        locationDescription: weatherData.locationDescription,
-        days,
-        weatherData: weatherData,
-        isCurrentLocation: false,
-      });
-    }
+    const savedWeatherSearch = await WeatherModel.create({
+      searchType,
+      searchQuery,
+      resolvedLocationName:
+        weatherData.city?.name || weatherData.name || "Unknown",
+      locationDescription: weatherData.locationDescription,
+      days,
+      weatherData: weatherData,
+    });
 
     res.status(201).json({
       success: true,

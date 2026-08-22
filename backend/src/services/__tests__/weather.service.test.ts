@@ -51,7 +51,7 @@ describe("Weather Services", () => {
       expect(axios.get).toHaveBeenNthCalledWith(
         2,
         "https://en.wikipedia.org/api/rest_v1/page/summary/London",
-        { headers: { "User-Agent": "WeatherApp/1.0" } }
+        { headers: { "User-Agent": "WeatherApp/1.0" } },
       );
       expect(result).toEqual({
         ...mockWeatherResponse.data,
@@ -136,12 +136,6 @@ describe("Weather Services", () => {
 
       expect(weatherModel.find).toHaveBeenCalledWith({});
       expect(result).toEqual(mockData);
-    });
-
-    it("should throw NotFoundError if no records exist", async () => {
-      vi.mocked(weatherModel.find).mockResolvedValue([] as any);
-
-      await expect(getWeatherDataService()()).rejects.toThrow(NotFoundError);
     });
   });
 

@@ -14,6 +14,7 @@ interface SidebarProps {
   isLoading: boolean;
   selectedHistoryId: string | null;
   onHistorySelect: (id: string) => void;
+  currentLocationId: string | null;
 }
 
 const Sidebar = ({
@@ -22,6 +23,7 @@ const Sidebar = ({
   isLoading,
   selectedHistoryId,
   onHistorySelect,
+  currentLocationId,
 }: SidebarProps) => {
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
   const [editingRecord, setEditingRecord] = useState<any>(null);
@@ -68,7 +70,7 @@ const Sidebar = ({
   };
 
   return (
-    <aside className="w-full md:w-80 h-full flex-shrink-0 border-r border-slate-700/50 bg-slate-800/40 p-5 flex flex-col gap-6">
+    <aside className="w-full md:w-80 h-full flex-shrink-0 md:border-r border-slate-700/50 bg-slate-800/40 p-4 md:p-5 flex flex-col gap-6 overflow-hidden">
       <SearchBar
         onSearchSuccess={handleSearchSuccessWrapper}
         editingRecord={editingRecord}
@@ -124,14 +126,6 @@ const Sidebar = ({
                 >
                   <div className="flex justify-between items-start mb-4">
                     <span className="font-semibold text-slate-200 group-hover:text-white transition-colors truncate pr-2 flex items-center gap-1">
-                      {record.isCurrentLocation && (
-                        <span
-                          title="Current Location"
-                          className="text-blue-400"
-                        >
-                          📍
-                        </span>
-                      )}
                       {record.resolvedLocationName}
                     </span>
 
@@ -161,19 +155,23 @@ const Sidebar = ({
                               Edit
                             </span>
                           </button>
-                          {!record.isCurrentLocation && (
-                            <button
-                              onMouseDown={(e) => handleDelete(record._id, e)}
-                              className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2"
-                            >
-                              <span className="flex items-center gap-2">
-                                <div className="w-6 h-6">
-                                  <DashboardIcon iconCode="delete" />
-                                </div>
-                                Delete
-                              </span>
-                            </button>
-                          )}
+                          <button
+                            onMouseDown={(e) => handleDelete(record._id, e)}
+                            className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${
+                              record._id === currentLocationId
+                                ? "text-slate-500 cursor-not-allowed" 
+                                : "text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                            }`}
+                            disabled={record._id === currentLocationId}
+                            title={record._id === currentLocationId ? "Cannot delete your active location" : "Delete location"}
+                          >
+                            <span className="flex items-center gap-2">
+                              <div className="w-6 h-6">
+                                <DashboardIcon iconCode="delete" />
+                              </div>
+                              Delete
+                            </span>
+                          </button>
                         </div>
                       )}
                     </div>
