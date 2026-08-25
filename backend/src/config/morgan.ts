@@ -12,11 +12,13 @@ const nodeEnv = validateEnv()?.env;
 
 const getIPFormat = () => (nodeEnv === "production" ? ":remote-addr - " : "");
 
-let successHandler;
-let errorHandler;
+let successHandler: any;
+let errorHandler: any;
 
-if (nodeEnv === "production") {
-  // Log to console in production
+const isProduction = nodeEnv === "production" || process.env.NODE_ENV === "1";
+
+if (isProduction) {
+  // Log to console in production or Vercel
   const successResponseFormat = `${getIPFormat()} :method :url :status :response-time ms :user-agent :date`;
   successHandler = morgan(successResponseFormat, {
     skip: (req, res) => res.statusCode >= 400,
@@ -37,6 +39,10 @@ if (nodeEnv === "production") {
 
   const accessLogStream = createWriteStream(path.join(logsDir, "access.log"), {
     flags: "a",
+  });
+
+  accessLogStream.on("error", (err) => {
+    console.error("Stream error in morgan logger:", err);
   });
 
   const successResponseFormat = `${getIPFormat()} :method :url :status :response-time ms :user-agent :date`;
