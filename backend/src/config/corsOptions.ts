@@ -7,6 +7,10 @@ const allowedOrigins: string[] = [
   "http://localhost:3003",
 ];
 
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 export const corsOptions: cors.CorsOptions = {
   origin: (
     origin: string | undefined,
